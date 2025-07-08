@@ -1,80 +1,107 @@
 package com.example.mycalculator
 
-import kotlin.time.Duration.Companion.milliseconds
 
-fun calculateExpression(inputValueArgument: String): Int {
-    if (inputValueArgument.isEmpty()){
-        return 0
+
+fun calculateExpression(inputValueArgument: String): Double {
+    var currentNumber = ""
+    var currentOperation = '+'
+    var result = 0.0
+    if (inputValueArgument.isEmpty()) return result
+
+    val inputValue = if (doesInputValueHaveMultiplicationOrDivision(inputValueArgument)) {
+        changeOperationsOrder(inputValueArgument)
+    } else {
+        inputValueArgument
     }
-    var result = 0
-    if (doesInputValueHaveMultiplicationOrDivision(inputValueArgument)){
-        var inputValue = changeOperationsOrder(inputValueArgument)
-    }else{
-        var inputValue =  inputValueArgument
+
+    for (i in inputValue.indices) {
+        val c = inputValue[i]
+
+        if (c.isDigit() || c == '.') {
+            currentNumber += c
+        }
+
+        val isLastChar = i == inputValue.lastIndex
+
+        if (!c.isDigit() && c != '.' || isLastChar) {
+            if (currentNumber.isNotEmpty()) {
+                val num = currentNumber.toDouble()
+                when (currentOperation) {
+                    '+' -> result += num
+                    '-' -> result -= num
+                    '*' -> result *= num
+                    '/' -> result /= num
+                }
+                currentNumber = ""
+            }
+
+            if (!c.isDigit() && c != '.') {
+                currentOperation = c
+            }
+        }
     }
 
-
+    if (currentNumber.isNotEmpty()) {
+        val num = currentNumber.toDouble()
+        when (currentOperation) {
+            '+' -> result += num
+            '-' -> result -= num
+            '*' -> result *= num
+            '/' -> result /= num
+        }
+    }
 
     return result
 }
 
+
+
 fun changeOperationsOrder(inputValue: String): String {
-
-    var inputValueReformated = inputValue
-
-    var prioritizedParts = mutableListOf<String>()
-
-    if (
-        inputValue.last() == '+' || inputValue.last() == '-' || inputValue.last() == '*' || inputValue.last() == '/'
-        ){
-        inputValueReformated = inputValueReformated.removeRange(inputValueReformated.lastIndex, inputValueReformated.lastIndex + 1)
-    }
-
-    if (inputValueReformated[0].isDigit()){
-        inputValueReformated = "+$inputValueReformated"
-    }
-
+    var expression = inputValue
     var i = 0
 
-    if (inputValueReformated[0].isDigit()){
-        inputValueReformated = "+$inputValueReformated"
-    }
+    while (i < expression.length) {
+        if (expression[i] == '*' || expression[i] == '/') {
 
-    while (i < inputValue.lastIndex) {
-        if (inputValue[i].toString() === "*" || inputValue[i].toString() === "/") {
-            var startIndexOfElementToTransfer = i - 1
-            while (startIndexOfElementToTransfer >= 0 && inputValueReformated[startIndexOfElementToTransfer].isDigit()){
-                startIndexOfElementToTransfer--
+            var leftStart = i - 1
+            while (leftStart >= 0 && expression[leftStart].isDigit()) {
+                leftStart--
             }
-            if(startIndexOfElementToTransfer < 0){
-                startIndexOfElementToTransfer = 0
-            }else{
-                startIndexOfElementToTransfer++
-            }
-            var lastIndexOfElementToTransfer = i + 1
-            while (lastIndexOfElementToTransfer < inputValueReformated.length && inputValueReformated[lastIndexOfElementToTransfer].isDigit()){
-                lastIndexOfElementToTransfer++
+            leftStart++
+
+            val left = expression.substring(leftStart, i).toDouble()
+
+            var rightEnd = i + 1
+            while (rightEnd < expression.length && expression[rightEnd].isDigit()) {
+                rightEnd++
             }
 
-            val elementToTransfer = inputValueReformated.substring(startIndexOfElementToTransfer..lastIndexOfElementToTransfer)
+            val right = expression.substring(i + 1, rightEnd).toDouble()
 
-            prioritizedParts.add(elementToTransfer)
+            val result = if (expression[i] == '*') {
+                left * right
+            } else {
+                if (right == 0.0) return "0"
+                left / right
+            }
 
-            inputValueReformated = inputValueReformated.removeRange(startIndexOfElementToTransfer..lastIndexOfElementToTransfer)
+            expression = expression.replaceRange(leftStart, rightEnd, result.toString())
+
             i = 0
-        }else{
+        } else {
             i++
         }
     }
 
-    return prioritizedParts.joinToString("") + inputValueReformated
+    return expression
 }
+
 
 
 fun doesInputValueHaveMultiplicationOrDivision(inputValue: String): Boolean{
     var doesInputValueHaveMultiplicationOrDivision = false
     for (i in 0 .. inputValue.lastIndex){
-        if (inputValue[i].toString()  === "+" || inputValue[i].toString()  === "-" || inputValue[i].toString()  === "*" || inputValue[i].toString()  === "/"){
+        if (inputValue[i].toString()  == "+" || inputValue[i].toString()  == "-" || inputValue[i].toString()  == "*" || inputValue[i].toString()  == "/"){
             doesInputValueHaveMultiplicationOrDivision = true
         }
     }

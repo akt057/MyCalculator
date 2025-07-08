@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,12 +45,10 @@ class MainActivity : ComponentActivity() {
 fun MyCalculator(modifier: Modifier = Modifier) {
 
     var inputValue by remember { mutableStateOf("") }
-    var currentSymbol by remember { mutableStateOf("") }
-    var allValues = remember { mutableListOf<Int>() }
-    var allSigns = remember { mutableListOf<String>() }
-    var resultDisplayed by remember { mutableStateOf("") }
-    var resultInt by remember { mutableStateOf(0) }
 
+    var resultDisplayed by remember { mutableStateOf("") }
+
+    var resultUnchecked by remember { mutableDoubleStateOf(0.0) }
 
     val customTextStyleH1 = TextStyle(
         fontFamily = FontFamily.SansSerif,
@@ -72,7 +71,7 @@ fun MyCalculator(modifier: Modifier = Modifier) {
         Text(text = "Calculator", style = customTextStyleH1/*, modifier  = Modifier.padding(8.dp)*/)
 
         Text(
-            text = "$inputValue=$resultDisplayed",
+            text = "$inputValue$resultDisplayed",
             style = customTextStyleInputValue,
             modifier = Modifier.padding(50.dp)
         )
@@ -154,12 +153,8 @@ fun MyCalculator(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(onClick = {
-                inputValue = ""
-                currentSymbol = ""
                 resultDisplayed = ""
-                resultInt = 0
-                allValues.clear()
-                allSigns.clear()
+                inputValue = ""
             }) {
                 Text("C")
             }
@@ -170,6 +165,12 @@ fun MyCalculator(modifier: Modifier = Modifier) {
             }
             Button(onClick = {
                 inputValue = "$inputValue="
+                resultUnchecked = calculateExpression(inputValue)
+                resultDisplayed = if (resultUnchecked == resultUnchecked.toInt().toDouble()){
+                    resultUnchecked.toInt().toString()
+                }else{
+                    resultUnchecked.toString()
+                }
             }) {
                 Text("=")
             }
