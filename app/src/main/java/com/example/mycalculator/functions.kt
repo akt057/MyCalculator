@@ -1,14 +1,17 @@
 package com.example.mycalculator
 
+import kotlin.time.Duration.Companion.milliseconds
+
 fun calculateExpression(inputValueArgument: String): Int {
-    var result = 0
-    mutableListOf<Int>()
-    var inputValue = inputValueArgument
-
-    if (inputValue[0].isDigit()) {
-        inputValue = "+$inputValue"
+    if (inputValueArgument.isEmpty()){
+        return 0
     }
-
+    var result = 0
+    if (doesInputValueHaveMultiplicationOrDivision(inputValueArgument)){
+        var inputValue = changeOperationsOrder(inputValueArgument)
+    }else{
+        var inputValue =  inputValueArgument
+    }
 
 
 
@@ -19,6 +22,18 @@ fun changeOperationsOrder(inputValue: String): String {
 
     var inputValueReformated = inputValue
 
+    var prioritizedParts = mutableListOf<String>()
+
+    if (
+        inputValue.last() == '+' || inputValue.last() == '-' || inputValue.last() == '*' || inputValue.last() == '/'
+        ){
+        inputValueReformated = inputValueReformated.removeRange(inputValueReformated.lastIndex, inputValueReformated.lastIndex + 1)
+    }
+
+    if (inputValueReformated[0].isDigit()){
+        inputValueReformated = "+$inputValueReformated"
+    }
+
     var i = 0
 
     if (inputValueReformated[0].isDigit()){
@@ -28,34 +43,40 @@ fun changeOperationsOrder(inputValue: String): String {
     while (i < inputValue.lastIndex) {
         if (inputValue[i].toString() === "*" || inputValue[i].toString() === "/") {
             var startIndexOfElementToTransfer = i - 1
-            for (j in i downTo 0) {
-                if (inputValue[j].toString() === "+" || inputValue[j].toString() === "-") {
-                    startIndexOfElementToTransfer = j
-                    break
-                }else if(j == 0){
-                    i++
-                    startIndexOfElementToTransfer = j
-                    break
-                }
+            while (startIndexOfElementToTransfer >= 0 && inputValueReformated[startIndexOfElementToTransfer].isDigit()){
+                startIndexOfElementToTransfer--
             }
-            if(startIndexOfElementToTransfer === 0){
-                continue
+            if(startIndexOfElementToTransfer < 0){
+                startIndexOfElementToTransfer = 0
+            }else{
+                startIndexOfElementToTransfer++
             }
             var lastIndexOfElementToTransfer = i + 1
-            for (j in i..inputValue.lastIndex) {
-                if (inputValue[j].toString() === "+" || inputValue[j].toString() === "-") {
-                    lastIndexOfElementToTransfer = j - 1
-                    break
-                }
+            while (lastIndexOfElementToTransfer < inputValueReformated.length && inputValueReformated[lastIndexOfElementToTransfer].isDigit()){
+                lastIndexOfElementToTransfer++
             }
-            val elementToTransfer = inputValue.substring(startIndexOfElementToTransfer..lastIndexOfElementToTransfer)
+
+            val elementToTransfer = inputValueReformated.substring(startIndexOfElementToTransfer..lastIndexOfElementToTransfer)
+
+            prioritizedParts.add(elementToTransfer)
+
             inputValueReformated = inputValueReformated.removeRange(startIndexOfElementToTransfer..lastIndexOfElementToTransfer)
-            inputValueReformated = elementToTransfer + inputValueReformated
+            i = 0
+        }else{
+            i++
         }
-        i++
     }
 
-    return inputValueReformated
+    return prioritizedParts.joinToString("") + inputValueReformated
 }
 
 
+fun doesInputValueHaveMultiplicationOrDivision(inputValue: String): Boolean{
+    var doesInputValueHaveMultiplicationOrDivision = false
+    for (i in 0 .. inputValue.lastIndex){
+        if (inputValue[i].toString()  === "+" || inputValue[i].toString()  === "-" || inputValue[i].toString()  === "*" || inputValue[i].toString()  === "/"){
+            doesInputValueHaveMultiplicationOrDivision = true
+        }
+    }
+    return doesInputValueHaveMultiplicationOrDivision
+}
