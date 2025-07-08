@@ -44,12 +44,11 @@ class MainActivity : ComponentActivity() {
 fun MyCalculator(modifier: Modifier = Modifier) {
 
     var inputValue by remember { mutableStateOf("") }
-    var currentSymbol by remember {mutableStateOf("")}
-    var allValues = remember{ mutableListOf<Int>()}
-    var allSigns = remember{mutableListOf<String>()}
-    var resultDisplayed by remember{mutableStateOf("")}
-    var resultInt by remember{mutableStateOf(0)}
-
+    var currentSymbol by remember { mutableStateOf("") }
+    var allValues = remember { mutableListOf<Int>() }
+    var allSigns = remember { mutableListOf<String>() }
+    var resultDisplayed by remember { mutableStateOf("") }
+    var resultInt by remember { mutableStateOf(0) }
 
 
     val customTextStyleH1 = TextStyle(
@@ -72,11 +71,15 @@ fun MyCalculator(modifier: Modifier = Modifier) {
     ) {
         Text(text = "Calculator", style = customTextStyleH1/*, modifier  = Modifier.padding(8.dp)*/)
 
-        Text(text = "$inputValue=$resultDisplayed", style = customTextStyleInputValue, modifier = Modifier.padding(50.dp))
+        Text(
+            text = "$inputValue=$resultDisplayed",
+            style = customTextStyleInputValue,
+            modifier = Modifier.padding(50.dp)
+        )
 
-        Row (
+        Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ){
+        ) {
             Button(onClick = {
                 inputValue = inputValue + "1"
             }) {
@@ -94,25 +97,14 @@ fun MyCalculator(modifier: Modifier = Modifier) {
             }
             Button(onClick = {
                 inputValue = "$inputValue+"
-//                if (allSigns.isNotEmpty() && allSigns[allSigns.lastIndex] === "*"){
-//                    currentSymbol = (currentSymbol.toInt() * allValues[allValues.lastIndex]).toString()
-//                    allValues[allValues.lastIndex] = currentSymbol.toInt()
-//                }else if (allSigns.isNotEmpty() && allSigns[allSigns.lastIndex] === "/"){
-//                    currentSymbol = (currentSymbol.toInt() / allValues[allValues.lastIndex]).toString()
-//                    allValues[allValues.lastIndex] = currentSymbol.toInt()
-//                }else {
-//                    allValues.add(currentSymbol.toInt())
-//                    currentSymbol = ""
-//                    allSigns.add("+")
-//                }
             }) {
                 Text("+")
             }
         }
-        Row (
+        Row(
 
             horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ){
+        ) {
             Button(onClick = {
                 inputValue = inputValue + "4"
             }) {
@@ -130,21 +122,13 @@ fun MyCalculator(modifier: Modifier = Modifier) {
             }
             Button(onClick = {
                 inputValue = "$inputValue-"
-//                if (allSigns[allSigns.lastIndex] === "*"){
-//                    currentSymbol = (currentSymbol.toInt() * allValues[allValues.lastIndex]).toString()
-//                }else if (allSigns[allSigns.lastIndex] === "/"){
-//                    currentSymbol = (currentSymbol.toInt() / allValues[allValues.lastIndex]).toString()
-//                }
-//                allValues.add(currentSymbol.toInt())
-//                currentSymbol = ""
-//                allSigns.add("-")
             }) {
                 Text("-")
             }
         }
-        Row (
+        Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ){
+        ) {
             Button(onClick = {
                 inputValue = inputValue + "7"
             }) {
@@ -166,9 +150,9 @@ fun MyCalculator(modifier: Modifier = Modifier) {
                 Text("*")
             }
         }
-        Row (
+        Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ){
+        ) {
             Button(onClick = {
                 inputValue = ""
                 currentSymbol = ""
@@ -186,15 +170,6 @@ fun MyCalculator(modifier: Modifier = Modifier) {
             }
             Button(onClick = {
                 inputValue = "$inputValue="
-//                for(i in 0 .. allSigns.lastIndex){
-//                        if (allSigns[i] === "+") {
-//                            allValues[i + 1] = allValues[i] + allValues[i + 1]
-//                        }
-//                        if (allSigns[i] === "-") {
-//                            allValues[i + 1] = allValues[i] - allValues[i + 1]
-//                        }
-//                }
-//                resultDisplayed = allValues[allValues.lastIndex].toString()
             }) {
                 Text("=")
             }
@@ -205,9 +180,6 @@ fun MyCalculator(modifier: Modifier = Modifier) {
             }
         }
     }
-
-
-
 
 
 }
