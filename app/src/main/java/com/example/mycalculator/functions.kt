@@ -63,20 +63,33 @@ fun changeOperationsOrder(inputValue: String): String {
     while (i < expression.length) {
         if (expression[i] == '*' || expression[i] == '/') {
 
+            if (i == 0 || i == expression.lastIndex) {
+                i++
+                continue
+            }
+
             var leftStart = i - 1
-            while (leftStart >= 0 && expression[leftStart].isDigit()) {
+            while (leftStart >= 0 && (expression[leftStart].isDigit() || expression[leftStart] == '.')) {
                 leftStart--
             }
             leftStart++
 
-            val left = expression.substring(leftStart, i).toDouble()
+            val left = expression.substring(leftStart, i).toDoubleOrNull()
+            if (left == null) {
+                i++
+                continue
+            }
 
             var rightEnd = i + 1
-            while (rightEnd < expression.length && expression[rightEnd].isDigit()) {
+            while (rightEnd < expression.length && (expression[rightEnd].isDigit() || expression[rightEnd] == '.')) {
                 rightEnd++
             }
 
-            val right = expression.substring(i + 1, rightEnd).toDouble()
+            val right = expression.substring(i + 1, rightEnd).toDoubleOrNull()
+            if (right == null) {
+                i++
+                continue
+            }
 
             val result = if (expression[i] == '*') {
                 left * right
@@ -95,7 +108,7 @@ fun changeOperationsOrder(inputValue: String): String {
 
     return expression
 }
-//
+
 
 
 fun doesInputValueHaveMultiplicationOrDivision(inputValue: String): Boolean{
